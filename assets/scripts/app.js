@@ -1,86 +1,92 @@
+let mapOfLists = new Map(); // Global variable to store lists
 
+
+/**
+ * This Function runs when the window loads. It has an event listener to process clicks.
+ */
 window.onload=function(){
-let mapOfLists = new Map();
 
+/**
+ * This event listener processes clicks for a specific list's: text box, add, remove, delete
+ */
 document.addEventListener('click', function(event){
-    
-    if(event.target.tagName == 'STRIKE'){
-        var id = event.target.parentNode.id;
-    }else{
-        var id = event.target.id;
-    }
+    //let body = document.getElementsByTagName('body').item(0);
+    //console.log(body)
 
+    //Get Id
+    let id = event.target.id;
     if (!id) return;
-
-    // Create a List
-    if (id == 'createList'){
-        createToDoList(mapOfLists);
-        return;
-    }
-
-
+    
     // Get the element
     let elem = document.getElementById(id);
+    // Get list name
     let list = elem.getAttribute("for");
     if(!list) return;
-    //Get the list 
+
+    //Find list in map
     listToProcess = mapOfLists.get(list)
     var section = document.getElementById(list);
     if(!listToProcess) return
-    
-    //toggle cross off
-    if(elem.hasAttribute("crossoff")){
-        //Check if strike
-        if(elem.innerHTML == 'STRIKE'){
-            crossOffItem(elem.innerHTML.innerText, listToProcess)
-        }
-        else{
-            crossOffItem(elem.innerText, listToProcess)
-        }
-        return;
-    }
-    
-    // get text box
+
+    // Get text from text box
     var textItem = section.getElementsByTagName("input").item(0).value;
-    if(!textItem) return;
+    // Set text box to empty
+    section.getElementsByTagName("input").item(0).value = ""
 
     //Process action
     switch(elem.getAttribute("type")){
         case "add":
+            if(!textItem) return;
             listToProcess.addTask(textItem);
             break;
         case "remove":
+            if(!textItem) return;
             listToProcess.removeTask(textItem);
             break;
         case "delete":
             section.remove();
+            mapOfLists.delete(list)
             break;
     }
 })
 }
-
-function crossOffItem(itemName, listToProcess){
-    var crossOff = listToProcess.toggleCrossOffItem(itemName);
+/**
+ * This method crosses an item off of the list
+ * 
+ * 
+ * @param {*} itemId Id of item to cross off
+ * @param {*} list List containing item
+ * @returns 
+ */
+function crossOffItem(itemId, list){
+    // Find list in map
+    listToProcess = mapOfLists.get(list)
+    var crossOff = listToProcess.toggleCrossOffItem(itemId);
     return crossOff
 }
-
-function createToDoList(mapOfLists){
-
+/**
+ * This method creates a new todo list with a name.
+ * @returns 
+ */
+function createToDoList(){
+    //prompt User
     let listName = prompt("Please a Name for your List:", "Groceries");
     if (listName == null || listName ==""){
         return;
     }
     else{
+        //CreateList HTML
         var ids = createList(listName, mapOfLists);
         var sectionId = ids[0], listId = ids[1];
-        // filter out duplicates
+        // Filter out duplicates and add to map
         if (sectionId != null){
             mapOfLists.set(sectionId, new todoList(sectionId, listId))
         }
-
         return;
     }
 }
+
+
 
 
 

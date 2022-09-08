@@ -11,7 +11,6 @@ class todoList{
         this.tasks = [];
         
     }
-    
 
     /**
     * This method adds a task to the tasks list
@@ -22,8 +21,9 @@ class todoList{
     addTask(task){ 
         if (task == '') return;
         var item = new todoItem(task);
+        item.setId(this.listId+"-"+task+ this.uniqueID().toString())
         this.tasks.push(item);
-        this.displayList()
+        displayList('add', item, this.listId, this.sectionId)
     }
 
     /**
@@ -34,12 +34,12 @@ class todoList{
     */
     removeTask(task){ 
         if (task == '') return;
-        var index = this.findItem(task);
-
+        var index = this.findItemByName(task);
         if( index > -1){
+            displayList('remove', this.tasks[index], this.listId)
             this.tasks.splice(index,1);
         }
-        this.displayList()
+        
         
     }
     
@@ -50,9 +50,9 @@ class todoList{
      */
     toggleCrossOffItem(task){
         if (task == '') return;
-        var index = this.findItem(task);
+        var index = this.findItemById(task);
         this.tasks[index].toggleCrossOff()
-        this.displayList();
+        displayList('strike', this.tasks[index], this.listId);
         return this.tasks[index].getCrossOff()
     }
 
@@ -62,7 +62,7 @@ class todoList{
      * @param {*} item 
      * @returns index of item, or -1 if not found
      */
-    findItem(item){
+    findItemByName(item){
         if (item == '') return;
         for (let i = 0; i < this.tasks.length; ++i){
             if (this.tasks[i].getName() == item){
@@ -71,44 +71,32 @@ class todoList{
         }
         return -1;
     }
+    /**
+     * Search for an item in the list by id
+     * @param {*} item 
+     * @returns 
+     */
+    findItemById(item){
+        if (item == '') return;
+        for (let i = 0; i < this.tasks.length; ++i){
+            if (this.tasks[i].getId() == item){
+                return i;
+            }
+        }
+        return -1;
+    }
 
     /**
-    * This method displays a list of items under a tag.
-    * It can does not display items repeatadly
-    * it removes items that are not in the list
-    * 
-    *  @param {*,*} item to add, remove, or update crossoff
-    * @returns None
-    */
-    displayList(){
-        document.getElementById(this.listId).innerHTML = "";
-        let list = document.getElementById(this.listId);
-
-        //Display List
-        if (this.tasks.length > 0){
-            list.style.display = "block";
+     * Creates a unique number to add to an id. Used to identify duplicates
+     * @param {*} taskName 
+     * @returns 
+     */
+    uniqueID(taskName){
+        var randomNum = Math.floor(Math.random() * 11);
+        while( this.findItemById(taskName + randomNum.toString()) != -1){
+            randomNum = Math.floor(Math.random() * 11);
         }
-        else{
-            list.style.display = "none";
-        }
-
-        // Add all items to the list
-        for (let i = 0; i < this.tasks.length; ++i){
-            let li = document.createElement("li");
-            li.setAttribute("id", this.listId+"-"+this.tasks[i].getName())
-            li.setAttribute("for", this.sectionId);
-            let isCrossOff = this.tasks[i].getCrossOff();
-            li.setAttribute("crossoff", isCrossOff);
-
-            if ( isCrossOff != ""){
-                li.appendChild(this.tasks[i].getStrikeName());
-            }
-            else{
-                li.innerText = this.tasks[i].getName();
-            }
-
-            list.appendChild(li);
-       }
+        return randomNum;
     }
   
   

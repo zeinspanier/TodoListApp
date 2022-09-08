@@ -4,14 +4,15 @@
 class todoItem{
     constructor(task){
         this.taskName = task;// name of task
+        this.id = ""
         this.strikeName = "" // name if crossed off list
         this.crossOff = false; // if name is crossed off
     }
-    /**
-    * Returns name of this item
-    */
     getName(){
         return this.taskName;
+    }
+    getId(){
+        return this.id;
     }
     getCrossOff(){
         return this.crossOff;
@@ -19,6 +20,10 @@ class todoItem{
     getStrikeName(){
         return this.strikeName;
     }
+    setId(id){
+        this.id = id;
+    }
+    
     /**
     * Returns name of this item with letters crossed out
     */
@@ -28,7 +33,7 @@ class todoItem{
             this.crossOff = false
         }
         else{
-            var strike = document.createElement("strike")
+            var strike = document.createElement("strike");
             strike.innerText = this.taskName
             this.strikeName = strike
             this.crossOff = true
